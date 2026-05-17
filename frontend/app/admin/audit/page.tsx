@@ -75,11 +75,11 @@ export default function AuditPage() {
                     <td className="py-3 px-4 text-xs text-slate-500">
                       {log.target_model} #{log.target_id}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 max-w-md">
                       {log.new_value && (
-                        <code className="text-[10px] bg-slate-800 rounded px-1.5 py-0.5 text-slate-400 block max-w-xs truncate">
-                          {JSON.stringify(log.new_value)}
-                        </code>
+                        <pre className="text-[10px] bg-slate-800 rounded px-2 py-2 text-slate-300 whitespace-pre-wrap break-words overflow-x-auto">
+                          {JSON.stringify(log.new_value, null, 2)}
+                        </pre>
                       )}
                     </td>
                   </tr>
