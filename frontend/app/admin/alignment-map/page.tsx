@@ -129,7 +129,7 @@ export default function AlignmentMapPage() {
       node.attr('transform', (d: any) => `translate(${d.x},${d.y})`)
     })
 
-    return () => simulation.stop()
+    return () => { simulation.stop() }
   }, [data])
 
   return (
