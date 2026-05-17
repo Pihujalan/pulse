@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body { @apply bg-slate-950 text-slate-100; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-slate-900; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-600 rounded-full; }
+}
+
+@layer components {
+  .card { @apply bg-slate-900 border border-slate-800 rounded-xl p-6; }
+  .card-sm { @apply bg-slate-900 border border-slate-800 rounded-lg p-4; }
+  .btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-indigo-600 hover:bg-indigo-500 text-white; }
+  .btn-secondary { @apply btn bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700; }
+  .btn-danger { @apply btn bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-800; }
+  .btn-success { @apply btn bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-800; }
+  .input { @apply w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all; }
+  .label { @apply block text-sm font-medium text-slate-400 mb-1.5; }
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .sidebar-link { @apply flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-all cursor-pointer; }
+  .sidebar-link-active { @apply sidebar-link text-indigo-400 bg-indigo-900/30; }
+  .progress-bar { @apply h-2 rounded-full bg-slate-800 overflow-hidden; }
+  .progress-fill { @apply h-full rounded-full transition-all duration-500; }
+  .stat-card { @apply card flex flex-col gap-1; }
+  .section-title { @apply text-lg font-semibold text-slate-100 mb-4; }
+  .divider { @apply border-t border-slate-800 my-4; }
+}
+
+/* D3 alignment map */
+.node-goal circle { cursor: pointer; transition: r 0.2s; }
+.node-goal:hover circle { r: 14; }
+.node-employee rect { rx: 8; }
+.link { stroke-opacity: 0.4; }
+.link:hover { stroke-opacity: 0.8; }
