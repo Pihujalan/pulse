@@ -1,36 +1,42 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *.so
 *.egg
 *.egg-info/
 dist/
 build/
 .eggs/
-.env
 venv/
 env/
 .venv/
+
+# Environment files
+.env
+.env.local
+.env.production.local
 
 # Django
 staticfiles/
 media/
 *.sqlite3
 
-# Node
+# Node / Next
 node_modules/
 .next/
+frontend/.next
 out/
-.env.local
-.env.production.local
 
-# Docker volumes
+# Docker
 pgdata/
 
 # IDE
 .vscode/
 .idea/
 *.swp
+
+# OS
 .DS_Store
 
 # Logs
