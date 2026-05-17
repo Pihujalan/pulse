@@ -31,7 +31,7 @@ GoalEntry.objects.all().delete()
 GoalSheet.objects.all().delete()
 SharedGoal.objects.all().delete()
 QuarterWindow.objects.all().delete()
-User.objects.filter(is_superuser=False).delete()
+User.objects.all().delete()
 
 YEAR = 2025
 
