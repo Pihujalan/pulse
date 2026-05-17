@@ -1,313 +1,141 @@
-# 🌟 Pulse — Performance Management System
+# Pulse ⚡
 
-A full-stack goal-setting, check-in, and alignment platform built with **Django + Next.js 14**.
+### AI-Powered Performance Management Platform
 
----
+Pulse is a full-stack, goal-setting and performance management platform. Built to move organizations away from fragmented spreadsheets, Pulse provides structured workflows for tracking Key Performance Indicators (KPIs), enforcing quarterly check-ins, and aligning individual objectives with company-wide goals.
 
-## 🗂 Project Structure
-
-```
-pulse/
-├── backend/          ← Django 4.2 REST API
-│   ├── apps/
-│   │   ├── users/        User model + JWT auth
-│   │   ├── goals/        GoalSheet, GoalEntry, SharedGoal + signals
-│   │   ├── checkins/     Quarterly check-ins with window enforcement
-│   │   ├── cycles/       QuarterWindow management + Celery tasks
-│   │   ├── audit/        Immutable audit log
-│   │   ├── escalations/  Escalation tracking
-│   │   └── ai/           Groq AI endpoints (suggestions + comments)
-│   ├── services/
-│   │   ├── progress.py   ProgressCalculator (all 4 UoM formulas)
-│   │   ├── graph.py      Alignment map data builder
-│   │   └── export.py     CSV/Excel achievement reports
-│   └── scripts/
-│       └── seed.py       Demo data (7 users, full workflow)
-│
-├── frontend/         ← Next.js 14 App Router
-│   └── app/
-│       ├── (auth)/login/           Login page
-│       ├── employee/
-│       │   ├── dashboard/          Progress overview
-│       │   ├── goals/              Goal CRUD + AI suggestions
-│       │   └── checkins/           Quarterly check-in submission
-│       ├── manager/
-│       │   ├── dashboard/          Team overview
-│       │   ├── review/             Approve/return/inline-edit goals
-│       │   └── checkins/           Team check-in matrix + AI comments
-│       └── admin/
-│           ├── dashboard/          Org-wide metrics + charts
-│           ├── alignment-map/      D3 force-graph
-│           ├── matrix/             Heatmap grid
-│           ├── shared-goals/       Cross-team goal distribution
-│           ├── cycles/             Quarter window management
-│           ├── escalations/        Escalation tracker
-│           ├── export/             Excel/CSV download
-│           └── audit/              Immutable audit trail
-│
-├── docker-compose.yml
-├── .env.example
-└── README.md
-```
+By integrating LLM capabilities, Pulse automates the heavy lifting of drafting feedback and ensuring goals follow the SMART (Specific, Measurable, Achievable, Relevant, Time-bound) framework.
 
 ---
 
-## 🚀 Local Setup (Docker — Recommended)
+## 🚀 Live Demo & Links
+
+> **⚠️ Note:** This application is currently a **demo/portfolio project**. The live environment is populated with mock data for demonstration purposes.
+
+*   **Frontend (Next.js):**https://pulse-three-mocha.vercel.app/login
+*   **Backend API (Django):** https://pulse-production-2b9e.up.railway.app
+*   **Repository:** https://github.com/Pihujalan/pulse
+
+---
+
+## 📌 Problem Statement
+
+Traditional performance management relies on manual review cycles that suffer from:
+*   **Misalignment:** Employees lose sight of how their work impacts broader company goals.
+*   **Vague Objectives:** Goals lack proper metrics, weighting, and clear definitions.
+*   **Feedback Delays:** Reviews only happen annually, missing crucial intervention windows.
+*   **Administrative Overhead:** HR and managers spend hours tracking down updates and writing feedback.
+
+**Pulse** solves this by strictly enforcing goal weightings, opening automated quarterly check-in windows, and providing managers with AI-drafted feedback based on calculated performance variances.
+
+---
+
+## ✨ Key Features & Business Logic
+
+### 🎯 Goal Management & Validation
+*   **Strict Weighting Rules:** Validates a maximum of 8 goals per employee per cycle, with a minimum 10% weightage per goal. Total must equal exactly 100%.
+*   **Immutable State:** Goal sheets are locked upon approval via Django signals. Any state change triggers a record in an immutable `AuditLog`.
+*   **Dynamic UoM Scoring:** Custom `ProgressCalculator` handles complex achievement formulas, including ZERO UoM (where 0 = 100% score) and MAX UoM (where lower is better).
+
+### 🤖 AI Insights Engine (Groq Llama 3)
+*   **SMART Goal Formulation:** Users draft a rough goal title and the AI engine suggests 2-3 SMART reformulations with recommended Units of Measure.
+*   **Contextual Feedback Drafting:** When managers review quarterly check-ins, the AI analyzes planned vs. actual achievements to pre-fill professionally written, constructive feedback comments. Responses are cached in Redis to optimize API usage.
+
+### 📊 Alignment & Analytics
+*   **D3.js Force-Graph:** Visualizes cross-team shared goals and dependencies using a dynamic alignment map.
+*   **Manager & Admin Dashboards:** Provides team check-in matrices, escalation tracking, and real-time performance analytics built with Recharts.
+*   **Automated Exports:** Generates comprehensive CSV/Excel achievement reports utilizing Pandas and Openpyxl.
+
+### 📅 Cycle & Check-in Enforcement
+*   **Quarterly Windows:** The `QuarterWindow` model securely enforces when check-ins can be submitted, preventing out-of-cycle edits.
+
+---
+
+## 🏗 System Architecture
+
+![Architecture](docs/architecture.png)
+
+---
+
+
+
+## 🛠 Tech Stack
+
+### Frontend Client
+*   **Framework:** Next.js 14 (App Router)
+*   **Language:** TypeScript
+*   **UI & Styling:** Tailwind CSS, Shadcn UI
+*   **Data Visualization:** Recharts, D3.js v7
+
+### Backend API
+*   **Framework:** Django 4.2 & Django REST Framework
+*   **Authentication:** SimpleJWT (JSON Web Tokens)
+*   **Core Libraries:** Pandas, Openpyxl
+
+### Data & Background Processing
+*   **Database:** PostgreSQL 15
+*   **Cache & Message Broker:** Redis 7
+*   **Task Queue:** Celery & Django-Celery-Beat
+
+### AI & Infrastructure
+*   **LLM Provider:** Groq API (`llama-3.3-70b-versatile`)
+*   **Containerization:** Docker & Docker Compose
+*   **Deployment:** Railway (Backend) / Vercel (Frontend)
+
+---
+
+## ⚙️ Local Setup (Docker Recommended)
 
 ### Prerequisites
-- Docker Desktop installed and running
-- That's it.
+*   Docker Desktop installed and running.
 
-### Step 1 — Clone and configure
-
+### 1. Clone & Configure
 ```bash
-git clone <your-repo>
+git clone https://github.com/Pihujalan/pulse.git
 cd pulse
 cp .env.example .env
 ```
+*(The `.env.example` includes a pre-filled Groq API key for immediate testing)*
 
-The `.env` already has your Groq API key pre-filled. Change `SECRET_KEY` for production.
-
-### Step 2 — Start everything
-
+### 2. Start Services
 ```bash
 docker-compose up --build
 ```
+This boots up PostgreSQL, Redis, the Django API (port 8000), Celery workers, and the Next.js frontend (port 3000).
 
-This starts:
-- **PostgreSQL** on port 5432
-- **Redis** on port 6379
-- **Django API** on http://localhost:8000
-- **Celery** worker + beat scheduler
-- **Next.js** frontend on http://localhost:3000
-
-### Step 3 — Run migrations and seed
-
-In a second terminal:
-
+### 3. Run Migrations & Seed Data
+In a separate terminal, apply migrations and generate the demo environment (7 users with a full workflow history):
 ```bash
-# Run migrations
 docker-compose exec backend python manage.py migrate
-
-# Create Django superuser (optional, for /admin/)
-docker-compose exec backend python manage.py createsuperuser
-
-# Seed demo data (7 users + realistic goals/check-ins)
 docker-compose exec backend python scripts/seed.py
 ```
-
-### Step 4 — Open the app
-
-👉 **http://localhost:3000**
 
 ---
 
 ## 👤 Demo Accounts
 
-| Role | Email | Password | Notes |
-|------|-------|----------|-------|
-| Admin/HR | `admin@pulse.demo` | `pulse123` | Full access, all dashboards |
-| Manager (Sales) | `manager@pulse.demo` | `pulse123` | Rahul Mehta — Sales team |
-| Manager (Eng) | `manager2@pulse.demo` | `pulse123` | Ananya Iyer — Engineering team |
-| Employee | `employee@pulse.demo` | `pulse123` | Aditya Kumar — Approved sheet + Q1 check-ins done |
-| Employee | `employee2@pulse.demo` | `pulse123` | Sneha Patel — Approved |
-| Employee | `employee3@pulse.demo` | `pulse123` | Vikram Singh — Pending manager review |
-| Employee | `employee4@pulse.demo` | `pulse123` | Meera Nair — Returned for rework |
-| Employee | `employee5@pulse.demo` | `pulse123` | Rohan Das — Draft in progress |
+The seed script creates a fully populated environment with the Q2 check-in window OPEN. You can test different role perspectives using:
 
-**Q2 check-in window is OPEN** in seed data.
+| Role | Email | Password | Context |
+|------|-------|----------|---------|
+| **Admin/HR** | `admin@pulse.demo` | `pulse123` | Full system access, cycle management, and audit logs |
+| **Manager** | `manager@pulse.demo` | `pulse123` | Rahul Mehta (Sales) — Approving goals & drafting AI feedback |
+| **Employee** | `employee@pulse.demo` | `pulse123` | Aditya Kumar — Sheet approved, ready for Q2 check-in |
 
 ---
 
-## 🌐 Railway Deployment
+## 🔮 Future Enhancements
 
-### Prerequisites
-- Railway account at https://railway.app
-- Railway CLI: `npm install -g @railway/cli`
-
-### Step 1 — Login
-
-```bash
-railway login
-```
-
-### Step 2 — Create a new project
-
-```bash
-railway new
-# Name it "pulse"
-```
-
-### Step 3 — Add services
-
-In Railway dashboard, create these services:
-1. **PostgreSQL** (click "+ New" → Database → PostgreSQL)
-2. **Redis** (click "+ New" → Database → Redis)
-3. **Backend** (click "+ New" → GitHub Repo → select `pulse/backend`)
-4. **Frontend** (click "+ New" → GitHub Repo → select `pulse/frontend`)
-
-### Step 4 — Set environment variables
-
-**Backend service variables:**
-```
-SECRET_KEY=<generate-a-long-random-string>
-DEBUG=False
-GROQ_API_KEY=your_groq_api_key_here
-DATABASE_URL=<auto-filled from Railway PostgreSQL>
-REDIS_URL=<auto-filled from Railway Redis>
-ALLOWED_HOSTS=<your-backend-railway-domain>
-FRONTEND_URL=https://<your-frontend-railway-domain>
-```
-
-**Frontend service variables:**
-```
-NEXT_PUBLIC_API_URL=https://<your-backend-railway-domain>
-```
-
-### Step 5 — Deploy
-
-Railway auto-deploys when you push to GitHub. Or manually:
-
-```bash
-cd backend && railway up
-cd ../frontend && railway up
-```
-
-### Step 6 — Run seed data on Railway
-
-```bash
-railway run python scripts/seed.py
-```
+*   **Real-time Collaboration:** WebSockets for live comments on goal sheets.
+*   **Predictive Analytics:** Forecasting end-of-year performance based on Q1/Q2 velocity.
+*   **Integrations:** Slack/MS Teams bots for check-in reminders and quick updates.
+*   **Mobile Support:** Progressive Web App (PWA) optimization for on-the-go managers.
 
 ---
 
-## 🔧 Development (Without Docker)
+## 👩‍💻 Author
 
-### Backend
+**Pihu Jalan**  
+*BTech Computer Science*
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# Set env vars
-export DATABASE_URL=postgresql://localhost:5432/pulse
-export REDIS_URL=redis://localhost:6379/0
-export GROQ_API_KEY=your_groq_api_key_here
-export SECRET_KEY=dev-secret
-
-python manage.py migrate
-python manage.py runserver
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
-npm run dev
-```
-
-### Celery (separate terminal)
-
-```bash
-cd backend
-celery -A config worker -l info --beat
-```
-
----
-
-## 🧠 AI Features (Groq)
-
-The Groq API key is already configured. Two AI-powered features:
-
-1. **Goal Suggestion** — When adding a goal, type a draft title and click "AI Suggest" to get 2-3 SMART reformulations with UoM recommendations.
-
-2. **Check-in Comment Drafting** — Managers reviewing check-ins can click "AI Draft Comment" to get a professionally written feedback comment pre-filled based on planned vs actual achievement.
-
-Both responses are cached in Redis (24h for suggestions, 1h for comments).
-
-**Model:** `llama-3.3-70b-versatile` (Groq's best free model)
-
----
-
-## 📐 Business Rules Implemented
-
-| Rule | Implementation |
-|------|---------------|
-| Max 8 goals per employee per cycle | Enforced in API + frontend |
-| Min 10% weightage per goal | Serializer validation |
-| Total weightage must = 100% | Pre-submission check |
-| Goal sheet locked on approval | Django signal |
-| Shared goal achievement syncs | `post_save` signal on GoalEntry |
-| Check-ins only during open windows | `QuarterWindow` model + API check |
-| Manager can inline-edit during review | Role + status check in views |
-| Admin can unlock approved sheets | Separate endpoint with audit log |
-| Immutable audit trail | `AuditLog.objects.create()` on all state changes |
-| ZERO UoM: zero = 100% score | `ProgressCalculator._zero_score()` |
-| MAX UoM: lower = better | `ProgressCalculator._max_score()` = target/achievement |
-
----
-
-## 📊 API Endpoints Summary
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/login/` | JWT login |
-| GET | `/api/auth/me/` | Current user |
-| GET/POST | `/api/goals/sheets/` | Goal sheets (role-filtered) |
-| POST | `/api/goals/sheets/:id/goals/` | Add goal |
-| PUT | `/api/goals/sheets/:id/goals/:id/` | Edit goal |
-| POST | `/api/goals/sheets/:id/submit/` | Submit for review |
-| POST | `/api/goals/sheets/:id/approve/` | Approve / move to review |
-| POST | `/api/goals/sheets/:id/return/` | Return for rework |
-| POST | `/api/goals/sheets/:id/unlock/` | Admin unlock |
-| GET/POST | `/api/goals/shared/` | Shared goals |
-| GET | `/api/goals/alignment-map/` | D3 graph data |
-| PATCH | `/api/goals/entries/:id/achievement/` | Log achievement |
-| GET/POST | `/api/checkins/goal/:id/` | Check-ins |
-| GET | `/api/checkins/team/` | Team check-in matrix |
-| GET | `/api/checkins/export/` | Download report |
-| GET/POST | `/api/cycles/windows/` | Quarter windows |
-| GET | `/api/audit/logs/` | Audit trail |
-| GET/POST | `/api/escalations/` | Escalations |
-| POST | `/api/ai/suggest-goal/` | AI goal suggestions |
-| POST | `/api/ai/draft-checkin-comment/` | AI comment draft |
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Tech |
-|-------|------|
-| Backend | Django 4.2, Django REST Framework, Celery, django-celery-beat |
-| Database | PostgreSQL 15 |
-| Cache / Queue | Redis 7 |
-| Auth | JWT (SimpleJWT) |
-| AI | Groq API (llama-3.3-70b-versatile) |
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
-| Charts | Recharts |
-| Graph | D3.js v7 (force simulation) |
-| Export | pandas + openpyxl |
-| Infra | Docker Compose (local), Railway (cloud) |
-
----
-
-## 🐛 Troubleshooting
-
-**"Connection refused" on backend startup**
-→ Wait for PostgreSQL to be healthy. Run `docker-compose up db redis` first, then `docker-compose up`.
-
-**Migrations fail**
-→ `docker-compose exec backend python manage.py migrate --run-syncdb`
-
-**Frontend shows blank page**
-→ Check `NEXT_PUBLIC_API_URL` in your `.env` — it must match where the backend is running.
-
-**AI features return fallback responses**
-→ Check that `GROQ_API_KEY` is set in `.env`. The key is pre-filled in `.env.example`.
-
-**Check-in window closed**
-→ In Railway/admin, go to Cycles & Windows and toggle Q2 to OPEN.
+GitHub: [github.com/Pihujalan](https://github.com/Pihujalan)
