@@ -129,11 +129,11 @@ function ReviewPageInner() {
                                 <div className="flex items-center gap-2">
                                   <div>
                                     <label className="text-xs text-slate-500">Target</label>
-                                    <input type="number" className="input w-20 py-1 text-sm" value={editGoal.target} onChange={e => setEditGoal(prev => prev ? { ...prev, target: e.target.value } : null)} />
+                                    <input type="number" className="input w-20 py-1 text-sm" value={editGoal!.target} onChange={e => setEditGoal(prev => prev ? { ...prev, target: e.target.value } : null)} />
                                   </div>
                                   <div>
                                     <label className="text-xs text-slate-500">Weight%</label>
-                                    <input type="number" className="input w-20 py-1 text-sm" value={editGoal.weightage} onChange={e => setEditGoal(prev => prev ? { ...prev, weightage: e.target.value } : null)} />
+                                    <input type="number" className="input w-20 py-1 text-sm" value={editGoal!.weightage} onChange={e => setEditGoal(prev => prev ? { ...prev, weightage: e.target.value } : null)} />
                                   </div>
                                   <button onClick={handleSaveEdit} className="btn-success py-1 px-2 text-xs mt-3"><Save className="w-3 h-3" /></button>
                                   <button onClick={() => setEditGoal(null)} className="btn-secondary py-1 px-2 text-xs mt-3">✕</button>
