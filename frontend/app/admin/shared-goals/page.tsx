@@ -49,7 +49,7 @@ function SharedGoalsInner() {
       await goalsApi.createSharedGoal({
         ...form,
         target: parseFloat(form.target),
-        primary_owner_id: parseInt(form.primary_owner_id),
+        primary_owner: parseInt(form.primary_owner_id),
       })
       toast(`Shared goal pushed to ${form.employee_ids.length} employees!`)
       setShowForm(false)
